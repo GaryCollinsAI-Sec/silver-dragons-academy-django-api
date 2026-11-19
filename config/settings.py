@@ -12,6 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 # Security.
+DJANGO_ENVIRONMENT = os.getenv("DJANGO_ENVIRONMENT", "development").lower()
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 DEBUG = False
 
@@ -43,6 +44,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "silvia.middleware.RequestBodyLimitMiddleware",
 ]
@@ -87,3 +89,13 @@ PRODUCTION_FRONTEND_URL = os.getenv("PRODUCTION_FRONTEND_URL")
 
 if PRODUCTION_FRONTEND_URL:
     CORS_ALLOWED_ORIGINS.append(PRODUCTION_FRONTEND_URL.rstrip("/"))
+
+# Production security settings.
+if DJANGO_ENVIRONMENT == "production":
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
