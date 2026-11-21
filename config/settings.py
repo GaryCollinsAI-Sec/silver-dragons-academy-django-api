@@ -31,6 +31,16 @@ if PRODUCTION_ALLOWED_HOSTS:
         if host.strip()
     )
 
+# Vercel deployment domains.
+for variable_name in (
+    "VERCEL_URL",
+    "VERCEL_PROJECT_PRODUCTION_URL",
+):
+    vercel_host = os.getenv(variable_name)
+
+    if vercel_host and vercel_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(vercel_host)
+
 # Applications.
 INSTALLED_APPS = [
     'django.contrib.staticfiles',
